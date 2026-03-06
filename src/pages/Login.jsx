@@ -132,7 +132,7 @@ export default function Login() {
       return alert("Za registraciju je dozvoljena samo email adresa na domeni @mf.unsa.ba");
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
       options: {
@@ -149,8 +149,21 @@ export default function Login() {
 
     if (error) return alert(error.message);
 
-    alert("Registracija uspješna. Provjerite Vaš email i potvrdite nalog prije prijave.");
-    setMode("login");
+    const signedUpUser = data?.user;
+
+    if (!signedUpUser) {
+      alert("Registracija uspješna.");
+      setMode("login");
+      return;
+    }
+
+    try {
+      const role = await ensureUserRowAfterAuth(signedUpUser);
+      await markOnline(signedUpUser.id);
+      nav("/welcome", { state: { role } });
+    } catch (err) {
+      return alert(err?.message || "Greška pri kreiranju profila korisnika.");
+    }
   }
 
   /* ---------------- UI ---------------- */
