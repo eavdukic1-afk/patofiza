@@ -94,7 +94,7 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // Heartbeat: set online + update last_seen every 30s while logged in
+  // Heartbeat: set online + update last_seen every 2 min while logged in
   useEffect(() => {
     const userId = session?.user?.id;
     if (!userId) return;
@@ -103,7 +103,7 @@ export function AuthProvider({ children }) {
 
     const interval = setInterval(() => {
       markOnline(userId);
-    }, 30000);
+    }, 2 * 60 * 1000);
 
     // Try to mark offline if tab is closed/reloaded (best-effort)
     const onUnload = () => {
