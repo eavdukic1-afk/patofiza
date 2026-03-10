@@ -53,6 +53,36 @@ function weightedAvgToText(weightedSum, weightSum) {
   return (Number(weightedSum || 0) / w).toFixed(2);
 }
 
+
+function finalAvgModulesToText(modulesMap) {
+  if (!modulesMap || modulesMap.size === 0) return "—";
+
+  let sum = 0;
+  let count = 0;
+
+  for (const m of modulesMap.values()) {
+    const w = Number(m?.gradeWeightMinutes || 0);
+    let avg = null;
+
+    if (w > 0) {
+      const ws = Number(m?.gradeWeightedSum || 0);
+      if (Number.isFinite(ws)) avg = ws / w;
+    } else {
+      const c = Number(m?.gradeCount || 0);
+      const s = Number(m?.gradeSum || 0);
+      if (c > 0 && Number.isFinite(s)) avg = s / c;
+    }
+
+    if (avg !== null && Number.isFinite(avg)) {
+      sum += avg;
+      count += 1;
+    }
+  }
+
+  if (!count) return "—";
+  return (sum / count).toFixed(2);
+}
+
 function getFullName(u) {
   const s = `${u.first_name ?? ""} ${u.last_name ?? ""}`.trim();
   return s || u.username || "—";
@@ -481,7 +511,7 @@ export default function AdminUsers() {
                                   <td style={tdStyleCenter}>{u.last_seen ? formatDateTime(u.last_seen) : "—"}</td>
 
                                   <td style={tdStyleRight}>{minutesToHM(st.totalMinutes)}</td>
-                                  <td style={tdStyleRight}>{avgToText(st.gradeSum, st.gradeCount)}</td>
+                                  <td style={tdStyleRight}>{finalAvgModulesToText(st.modules)}</td>
 
                                   <td style={tdStyleRight}>
                                     <button
@@ -560,7 +590,7 @@ function UserDetails({ user, stats, onOpenSessions }) {
             Ukupno: <span style={summaryStrongStyle}>{minutesToHM(stats.totalMinutes)}</span>
           </div>
           <div style={summaryPillStyle}>
-            Konačna prosječna ocjena: <span style={summaryStrongStyle}>{avgToText(stats.gradeSum, stats.gradeCount)}</span>
+            Konačna prosječna ocjena: <span style={summaryStrongStyle}>{finalAvgModulesToText(stats.modules)}</span>
           </div>
 
           <button type="button" onClick={onOpenSessions} style={openSessionsBtnStyle}>
