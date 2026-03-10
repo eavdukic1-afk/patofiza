@@ -398,7 +398,7 @@ function FloatingInput({ label, value, setValue, type = "text" }) {
   const isActive = value.length > 0;
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", width: "100%" }}>
       <input
         type={type}
         value={value}
@@ -462,12 +462,15 @@ const inputStyle = {
   borderRadius: 10,
   border: "1px solid #e5e7eb",
   outline: "none",
+  boxSizing: "border-box",
 };
 
 const selectStyle = {
+  width: "100%",
   padding: "12px",
   borderRadius: 10,
   border: "1px solid #e5e7eb",
+  boxSizing: "border-box",
 };
 
 const buttonStyle = {
